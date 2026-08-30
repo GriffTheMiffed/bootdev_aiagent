@@ -18,3 +18,26 @@ def write_file(working_directory: str, file_path: str, content: str) -> str:
     except Exception as e:
         return f'Error: failed to make "{target_file_path}" or write contents in write_file'
     return f'Successfully wrote to "{file_path}" ({len(content)} characters written)'
+
+
+
+schema_write_file = {
+    "type": "function",
+    "function": {
+        "name": "write_file",
+        "description": "Creates or overwrites a file at a path specified relative to the working directory wtih specified content",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "file_path": {
+                    "type": "string",
+                    "description": "Directory file path to write content to, relative to the working directory",
+                },
+                "content": {
+                    "type": "string",
+                    "description": "The content string to write to the file at the specified relative path",
+                }
+            },
+        },
+    },
+}

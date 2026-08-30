@@ -10,7 +10,7 @@ def get_file_content(working_directory: str, file_path: str) -> str:
     except Exception as e:
         return f'Error: os.path functions failed in get_file_content when checking if "{file_path}" is in "{working_directory}"'
     if target_path_valid_bool == False:
-        return f'Error: Cannot read "{file_path}" as it is outside the permitted working director: "{working_directory}"'
+        return f'Error: Cannot read "{file_path}" as it is outside the permitted working directory: "{working_directory}"'
     if os.path.isfile(target_file_path) == False:
         return f'Error: File not found or is not a regular file: "{file_path}'
     try: # Library file reading method for laoding n characters from file_path
@@ -22,3 +22,20 @@ def get_file_content(working_directory: str, file_path: str) -> str:
     except Exception as e:
         return f'Error: get_file_content failed to read "{file_path}" inside "{working_directory}"'
 
+
+schema_get_file_content = {
+    "type": "function",
+    "function": {
+        "name": "get_file_content",
+        "description": "Opens a file in a specified path relative to the working directory, reading characters up to a defined maximum",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "file_path": {
+                    "type": "string",
+                    "description": "Directory path to read files from, relative to the working directory",
+                }
+            },
+        },
+    },
+}
