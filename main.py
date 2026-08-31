@@ -6,6 +6,7 @@ from prompts import system_prompt
 from dotenv import load_dotenv
 from openai import OpenAI
 from functions.call_function import available_functions
+from functions.call_function import call_function
 
 
 def main() -> None:
@@ -47,11 +48,19 @@ def generate_content(client, messages, args):
     message = response.choices[0].message
     if message.tool_calls != None:
         for tool_call in message.tool_calls:
+            if tool_call.type != "function":
+                continue
             function_args = json.loads(tool_call.function.arguments or "{}")
             print(f"Calling function: {tool_call.function.name}({function_args})")
+            result_message = call_function(tool_call, args.verbose)
+            if result_message["content"] == None or "":
+                raise Exception(f'Error: tool_call of {tool_call.fucntion.name}({tool_call.function.arguments} returned empty conent')
+            print(result_message["content"])
+
     if message.tool_calls == None:
         print("Response:")
         print(message.content)
+        return
 
 
 if __name__ == "__main__":

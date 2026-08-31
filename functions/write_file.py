@@ -28,6 +28,10 @@ schema_write_file = {
         "description": "Creates or overwrites a file at a path specified relative to the working directory wtih specified content",
         "parameters": {
             "type": "object",
+            "required": [
+                    "file_path",
+                    "content"
+                ],
             "properties": {
                 "file_path": {
                     "type": "string",

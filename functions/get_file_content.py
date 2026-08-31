@@ -30,6 +30,7 @@ schema_get_file_content = {
         "description": "Opens a file in a specified path relative to the working directory, reading characters up to a defined maximum",
         "parameters": {
             "type": "object",
+            "required": "file_path",
             "properties": {
                 "file_path": {
                     "type": "string",
