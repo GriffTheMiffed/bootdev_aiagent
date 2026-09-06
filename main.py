@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 from openai import OpenAI
 from functions.call_function import available_functions
 from functions.call_function import call_function
+from generate_content import generate_content
 
 
 def main() -> None:
@@ -28,39 +29,19 @@ def main() -> None:
         {"role": "system", "content": system_prompt},
         {"role": "user", "content": args.user_prompt},
     ]
-    generate_content(client, messages, args)
- 
+    for _ in range(20):
+        result = generate_content(client, messages, args)
+        messages.append(result[0].choices[0].message)
+        messages.append(result[1])
+        if result[1]["content"][-11:] == "END OF LOOP":
+            print(result[1]["content"])
+            return
+        continue
+    print("---------------------")
+    print("LOOP ITER MAX REACHED")
+    print("---------------------")
+    exit(1)
 
-def generate_content(client, messages, args):
-    response = client.chat.completions.create(
-        model="openrouter/free",
-        messages = messages,
-        temperature=0,
-        tools=available_functions,
-    )
-    if response.usage == None:
-        raise RuntimeError("API failed to return a response to the chat completion request")
-
-    if args.verbose == True:
-        print(f"User prompt: {args.user_prompt}")
-        print(f"Prompt tokens: {response.usage.prompt_tokens}")
-        print(f"Response tokens: {response.usage.completion_tokens}")
-    message = response.choices[0].message
-    if message.tool_calls != None:
-        for tool_call in message.tool_calls:
-            if tool_call.type != "function":
-                continue
-            function_args = json.loads(tool_call.function.arguments or "{}")
-            print(f"Calling function: {tool_call.function.name}({function_args})")
-            result_message = call_function(tool_call, args.verbose)
-            if result_message["content"] == None or "":
-                raise Exception(f'Error: tool_call of {tool_call.fucntion.name}({tool_call.function.arguments} returned empty conent')
-            print(result_message["content"])
-
-    if message.tool_calls == None:
-        print("Response:")
-        print(message.content)
-        return
 
 
 if __name__ == "__main__":
